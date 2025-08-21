@@ -1,0 +1,15 @@
+[package]
+name = "pluau"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "pluau"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+pyo3 = "0.25.0"
+mluau = { git = "https://github.com/mluau/mluau", features = ["send", "value-ref-refcounted"] }
+bitflags = "2.9"
+pyo3-stub-gen = { git = "https://github.com/Jij-Inc/pyo3-stub-gen" }
