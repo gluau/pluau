@@ -38,7 +38,7 @@ class Function:
         This pointer cannot be converted back to a Lua function
         and is only useful for hashing and debugging.
         """
-    def call(self, args:typing.Sequence[None | builtins.bool | LightUserData | builtins.int | builtins.float | Vector | builtins.str | String | Table | Function | Thread | UserData | Buffer]) -> builtins.list[None | builtins.bool | LightUserData | builtins.int | builtins.float | Vector | builtins.str | String | Table | Function | Thread | UserData | Buffer]:
+    def call(self, *args) -> builtins.list[None | builtins.bool | LightUserData | builtins.int | builtins.float | Vector | builtins.str | String | Table | Function | Thread | UserData | Buffer]:
         r"""
         Calls the Lua function with the provided arguments.
         """

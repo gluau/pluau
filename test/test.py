@@ -25,13 +25,13 @@ def test_return2(_: pluau.Lua, args: tuple[Argument]):
 
 print("Testing function with single return value")
 fn = lua.create_function(test_return)
-rets = fn.call([10, None])
+rets = fn.call(10, None)
 assert(rets[0] == 11)
 rets = fn(11) # Using syntactic sugar
 assert(rets[0] == 12)
 print("Testing function with tuple return value")
 fn2 = lua.create_function(test_return2)
-rets2 = fn2.call([10, None])
+rets2 = fn2.call(10, None)
 assert(rets2[0] == 11)
 rets2 = fn2(11) # Using syntactic sugar
 assert(rets2[0] == 12)
@@ -50,7 +50,7 @@ def test_return_none(_: pluau.Lua, args: tuple[Argument]):
         raise ValueError("Negative value not allowed")
     return None
 fn3 = lua.create_function(test_return_none)
-rets3 = fn3.call([10, None])
+rets3 = fn3.call(10, None)
 assert(rets3[0] is None)
 assert(fn3 == fn3.deep_clone())
 print(hex(fn3.pointer))
@@ -68,7 +68,7 @@ def test_interrupt(_: pluau.Lua):
 lua.set_interrupt(test_interrupt)
 f = lua.load_chunk("while true do end", name="test_interrupt")
 try:
-    f.call([])
+    f.call()
 except RuntimeError as e:
     print(str(e))
     assert "Test interrupt" in str(e)
@@ -78,7 +78,7 @@ def test_interrupt2(_: pluau.Lua):
 
 lua.set_interrupt(test_interrupt2)
 try:
-    f.call([])
+    f.call()
 except RuntimeError as e:
     # We aren't running in a created thread (its on Lua main thread)
     #

@@ -14,6 +14,7 @@ pub struct Function {
 #[pymethods]
 impl Function {
     /// Calls the Lua function with the provided arguments.
+    #[pyo3(signature = (*args))]
     fn call(&self, args: Vec<ValueLike>) -> PyResult<Vec<ValueLike>> {
         let weak_lua = self.function.weak_lua();
         let Some(lua) = weak_lua.try_upgrade() else {
