@@ -386,6 +386,7 @@ impl Lua {
                 self.vm.load(as_bytes)
             },
             StringLike::StdString(std_string) => {
+                println!("std string: {std_string}");
                 self.vm.load(std_string)
             },
             StringLike::LuaString(lua_string) => {
@@ -471,9 +472,10 @@ impl Lua {
     /// Tells Lua to the currently running Lua thread once the ongoing callback returns.
     /// 
     /// Any results from the ongoing callback will be ignored and the args passed to yield_with will instead be yielded
-    fn yield_with(&self, values: Vec<ValueLike>) -> PyResult<()> {
-        let mut mv = mluau::MultiValue::with_capacity(values.len());
-        for value in values {
+    #[pyo3(signature = (*args))]
+    fn yield_with(&self, args: Vec<ValueLike>) -> PyResult<()> {
+        let mut mv = mluau::MultiValue::with_capacity(args.len());
+        for value in args {
             mv.push_back(value.into_lua(&self.vm).map_err(|x| PyRuntimeError::new_err(x.to_string()))?);
         }
         self.vm.yield_with(mv).map_err(|e| PyRuntimeError::new_err(e.to_string()))?;
@@ -526,6 +528,7 @@ fn pluau(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<string::String>()?;
     m.add_class::<function::Function>()?;
     m.add_class::<thread::Thread>()?;
+    m.add_class::<thread::ThreadState>()?;
     m.add_class::<userdata::UserData>()?;
     m.add_class::<buffer::Buffer>()?;
     Ok(())

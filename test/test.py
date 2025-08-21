@@ -132,3 +132,27 @@ tab = None
 gc.collect()
 
 assert lua.used_memory() / 1000 <= cmem + 10 # Memory use in KB
+
+print("Thread test")
+
+lua.remove_interrupt()
+
+func3 = lua.load_chunk("local yielder = ...; yielder(); return 1, 2", name="test_func2")
+print(func3)
+thread = lua.create_thread(func3)
+assert thread.status == pluau.ThreadState.Resumable
+def yielder(lua: pluau.Lua, _args: tuple[Argument]):
+    print("Yielding from yielder function")
+    lua.yield_with("Yielded value")
+
+yielderFunc = lua.create_function(yielder)
+res = thread.resume(yielderFunc)
+print(res, thread.status)
+if res[0] != "Yielded value":
+    raise RuntimeError("Expected 'Yielded value' but got: " + str(res[0]))
+assert thread.status == pluau.ThreadState.Resumable
+res = thread.resume()
+print(res, thread.status)
+assert res[0] == 1
+assert res[1] == 2
+assert thread.status == pluau.ThreadState.Finished

@@ -397,7 +397,54 @@ class Table:
     def __repr__(self) -> builtins.str: ...
 
 class Thread:
-    ...
+    @property
+    def pointer(self) -> builtins.int:
+        r"""
+        Returns the pointer to the Lua thread value.
+        
+        This pointer cannot be converted back to a Lua thread
+        and is only useful for hashing and debugging.
+        """
+    @property
+    def status(self) -> ThreadState:
+        r"""
+        Returns the current status of the LuaThread
+        """
+    def __str__(self) -> builtins.str: ...
+    def __repr__(self) -> builtins.str: ...
+    def __eq__(self, other:Thread) -> builtins.bool:
+        r"""
+        Returns if two threads are equal by (Luau) reference
+        """
+    def sandbox(self) -> None:
+        r"""
+        Sandboxes a Luau thread
+        
+        Under the hood replaces the global environment table with a new table, that performs writes locally and proxies reads to caller's global environment.
+        
+        This mode ideally should be used together with the global sandbox mode (Lua.sandbox).
+        
+        Please note that Luau links environment table with chunk when loading it into Lua state. Therefore you need to load chunks into a thread to link with the thread environment.
+        """
+    def reset(self, func:Function) -> None: ...
+    def resume(self, *args) -> builtins.list[None | builtins.bool | LightUserData | builtins.int | builtins.float | Vector | builtins.str | String | Table | Function | Thread | UserData | Buffer]:
+        r"""
+        Resume resumes a thread `th`
+        
+        Passes args as arguments to the thread. If the coroutine has called coroutine.yield, it will return these arguments. Otherwise, the coroutine wasn’t yet started, so the arguments are passed to its main function.
+        
+        If the thread is no longer resumable (meaning it has finished execution or encountered an error), this will return a coroutine unresumable error, otherwise will return as follows:
+        If the thread is yielded via coroutine.yield or CallbackLua.YieldWith, returns the values passed to yield. If the thread returns values from its main function, returns those.
+        """
+    def resume_error(self, arg:None | builtins.bool | LightUserData | builtins.int | builtins.float | Vector | builtins.str | String | Table | Function | Thread | UserData | Buffer) -> builtins.list[None | builtins.bool | LightUserData | builtins.int | builtins.float | Vector | builtins.str | String | Table | Function | Thread | UserData | Buffer]: ...
+    def close(self) -> None:
+        r"""
+        Closes a thread and marks it as finished, resetting it to the initial state of a newly created Lua thread regardless of current thread state.
+        """
+    def traceback(self) -> builtins.str:
+        r"""
+        Creates a traceback of the thread
+        """
 
 class UserData:
     @property
@@ -443,6 +490,26 @@ class LuaType(Enum):
     Function = ...
     Thread = ...
     Buffer = ...
+
+class ThreadState(Enum):
+    Resumable = ...
+    r"""
+    The thread was just created or is suspended (yielded).
+    
+    If a thread is in this state, it can be resumed by calling Thread.resume.
+    """
+    Running = ...
+    r"""
+    The thread is currently running.
+    """
+    Finished = ...
+    r"""
+    The thread has finished executing.
+    """
+    Error = ...
+    r"""
+    The thread has raised a Lua error during execution.
+    """
 
 class VmState(Enum):
     Continue = ...
