@@ -42,6 +42,10 @@ class Function:
         r"""
         Calls the Lua function with the provided arguments.
         """
+    def __call__(self, *args) -> builtins.list[None | builtins.bool | LightUserData | builtins.int | builtins.float | Vector | builtins.str | String | Table | Function | Thread | UserData | Buffer]:
+        r"""
+        Syntactic sugar for Function.call(args)
+        """
     def deep_clone(self) -> Function:
         r"""
         Returns a deep clone to a Lua-owned function
@@ -251,7 +255,146 @@ class String:
     def __eq__(self, other:typing.Any) -> builtins.bool: ...
 
 class Table:
-    ...
+    @property
+    def empty(self) -> builtins.bool:
+        r"""
+        Returns true if the table is empty, without invoking any metamethods
+        """
+    @property
+    def readonly(self) -> builtins.bool:
+        r"""
+        Returns if the table is readonly
+        """
+    @property
+    def pointer(self) -> builtins.int:
+        r"""
+        Returns the pointer to the Lua table value.
+        
+        This pointer cannot be converted back to a Lua table
+        and is only useful for hashing and debugging.
+        """
+    @readonly.setter
+    def readonly(self, value: builtins.bool) -> None:
+        r"""
+        Sets the table to be readonly (or not)
+        """
+    def clear(self) -> None:
+        r"""
+        Clears the table, removing all keys and values from array and hash parts, without invoking metamethods.
+        
+        This method is useful to clear the table while keeping its capacity
+        
+        Internally invokes ``lua_cleartable``
+        """
+    def contains_key(self, key:None | builtins.bool | LightUserData | builtins.int | builtins.float | Vector | builtins.str | String | Table | Function | Thread | UserData | Buffer) -> builtins.bool:
+        r"""
+        Returns if the table contains a non-nil value for the specified key.
+        
+        Might invoke ``__index`` metamethod. Use raw_get if this is not desired
+        """
+    def equals(self, other:Table) -> builtins.bool:
+        r"""
+        Compares two tables for equality.
+        
+        Tables are compared by reference first. If they are not referentially equal, then pluau will try to invoke the __eq metamethod on `self`` first and then `other`` if not found.
+        """
+    def __eq__(self, other:Table) -> builtins.bool: ...
+    def for_each(self, callback:typing.Any) -> None:
+        r"""
+        Iterates over the pairs of the table, invoking the given callback on each key-value pair.
+        """
+    def get(self, key:None | builtins.bool | LightUserData | builtins.int | builtins.float | Vector | builtins.str | String | Table | Function | Thread | UserData | Buffer) -> None | builtins.bool | LightUserData | builtins.int | builtins.float | Vector | builtins.str | String | Table | Function | Thread | UserData | Buffer:
+        r"""
+        Gets the value associated to key from the table. Might invoke ``__index`` metamethod
+        
+        Also see ``raw_get`` which does the same thing as ``get`` without invoking metamethods
+        """
+    def raw_get(self, key:None | builtins.bool | LightUserData | builtins.int | builtins.float | Vector | builtins.str | String | Table | Function | Thread | UserData | Buffer) -> None | builtins.bool | LightUserData | builtins.int | builtins.float | Vector | builtins.str | String | Table | Function | Thread | UserData | Buffer:
+        r"""
+        Gets the value associated to key from the table without invoking metamethods
+        
+        Also see ``get`` which does the same thing as ``raw_get`` while invoking ``__index`` metamethods
+        """
+    def len(self) -> builtins.int:
+        r"""
+        Returns the result of the Lua # operator. Might invoke the __len metamethod
+        
+        Use ``raw_len`` to get the length without invoking any metamethods
+        """
+    def raw_len(self) -> builtins.int:
+        r"""
+        Returns the result of the Lua # operator, without invoking the __len metamethod.
+        """
+    def __len__(self) -> builtins.int:
+        r"""
+        Same as ``Table.raw_len()``
+        
+        To invoke the ``__len`` metamethod. Use ``Table.len()`` instead
+        """
+    def set_safeenv(self, enabled:builtins.bool) -> None: ...
+    def metatable(self) -> typing.Optional[Table]:
+        r"""
+        Returns the table's metatable (if there is any present)
+        
+        Ignores __metatable and other protections
+        """
+    def set_metatable(self, mt:typing.Optional[Table]) -> None:
+        r"""
+        Sets or removes a metable on this table
+        """
+    def pop(self) -> None | builtins.bool | LightUserData | builtins.int | builtins.float | Vector | builtins.str | String | Table | Function | Thread | UserData | Buffer:
+        r"""
+        Removes the last element from the table and returns it. Might invoke the __len and __newindex metamethods.
+        
+        Also see ``raw_pop`` which does the same thing as ``pop`` without invoking metamethods
+        """
+    def raw_pop(self) -> None | builtins.bool | LightUserData | builtins.int | builtins.float | Vector | builtins.str | String | Table | Function | Thread | UserData | Buffer:
+        r"""
+        Removes the last element from the table and returns it without invoking metamethods
+        
+        Also see ``pop`` which does the same thing as ``raw_pop`` while invoking metamethods
+        """
+    def push(self, value:None | builtins.bool | LightUserData | builtins.int | builtins.float | Vector | builtins.str | String | Table | Function | Thread | UserData | Buffer) -> None:
+        r"""
+        Appends a value to the back of the table. Might invoke the __len and __newindex metamethods.
+        
+        Also see ``raw_push`` which does the same thing as ``push`` without invoking metamethods
+        """
+    def raw_push(self, value:None | builtins.bool | LightUserData | builtins.int | builtins.float | Vector | builtins.str | String | Table | Function | Thread | UserData | Buffer) -> None:
+        r"""
+        Appends a value to the back of the table without invoking metamethods
+        
+        Also see ``push`` which does the same thing as ``raw_push`` while invoking metamethods
+        """
+    def insert(self, index:builtins.int, value:None | builtins.bool | LightUserData | builtins.int | builtins.float | Vector | builtins.str | String | Table | Function | Thread | UserData | Buffer) -> None:
+        r"""
+        Inserts element value at position idx to the table (without invoking metamethods), shifting up the elements from table[idx].
+        
+        The worst case complexity is O(n), where n is the table length.
+        """
+    def remove(self, key:None | builtins.bool | LightUserData | builtins.int | builtins.float | Vector | builtins.str | String | Table | Function | Thread | UserData | Buffer) -> None:
+        r"""
+        Removes a key from the table without invoking metamethods.
+        
+        If the key is an integer, all elements from table[key+1] will be shifted down.
+        and table[key] will be removed with a worst case complexity of O(n),
+        
+        For non-integer keys, this is equivalent to a table[key] = nil operation,
+        """
+    def set(self, key:None | builtins.bool | LightUserData | builtins.int | builtins.float | Vector | builtins.str | String | Table | Function | Thread | UserData | Buffer, value:None | builtins.bool | LightUserData | builtins.int | builtins.float | Vector | builtins.str | String | Table | Function | Thread | UserData | Buffer) -> None:
+        r"""
+        Sets a key-value pair (effectively removing the pair if value is nil). Might invoke ``__newindex`` metamethod
+        
+        Also see ``raw_set`` which does the same thing as ``set`` without invoking metamethods
+        """
+    def raw_set(self, key:None | builtins.bool | LightUserData | builtins.int | builtins.float | Vector | builtins.str | String | Table | Function | Thread | UserData | Buffer, value:None | builtins.bool | LightUserData | builtins.int | builtins.float | Vector | builtins.str | String | Table | Function | Thread | UserData | Buffer) -> None:
+        r"""
+        Sets a key-value pair (effectively removing the pair if value is nil) without invoking metamethods
+        
+        Also see ``set`` which does the same thing as ``raw_set`` while invoking ``__newindex`` metamethods
+        """
+    def __str__(self) -> builtins.str: ...
+    def __repr__(self) -> builtins.str: ...
 
 class Thread:
     ...

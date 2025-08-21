@@ -41,6 +41,12 @@ impl Function {
         Ok(value_likes)
     }
 
+    /// Syntactic sugar for Function.call(args)
+    #[pyo3(signature = (*args))]
+    fn __call__(&self, args: Vec<ValueLike>) -> PyResult<Vec<ValueLike>> {
+        self.call(args)
+    }
+
     /// Returns a deep clone to a Lua-owned function
     ///
     /// If called on a Luau function, this method copies the function prototype and all its upvalues to the newly created function

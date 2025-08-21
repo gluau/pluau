@@ -1,5 +1,6 @@
 import pluau
 from pluau.utils import Argument
+import gc
 
 lua = pluau.Lua()
 lua.sandbox(True)
@@ -26,10 +27,17 @@ print("Testing function with single return value")
 fn = lua.create_function(test_return)
 rets = fn.call([10, None])
 assert(rets[0] == 11)
+rets = fn(11) # Using syntactic sugar
+assert(rets[0] == 12)
 print("Testing function with tuple return value")
 fn2 = lua.create_function(test_return2)
 rets2 = fn2.call([10, None])
 assert(rets2[0] == 11)
+rets2 = fn2(11) # Using syntactic sugar
+assert(rets2[0] == 12)
+assert(fn == fn.deep_clone()) # They are the same function
+assert(fn2 == fn2.deep_clone()) # They are the same function
+assert(fn != fn2) # They are different functions
 
 print(lua.used_memory() / 1000) # Memory use in KB
 
@@ -78,3 +86,49 @@ except RuntimeError as e:
     assert "attempt to yield across metamethod/C-call boundary" in str(e)
 
 print("Interrupt test passed")
+cmem = lua.used_memory() / 1000 # Memory use in KB
+print(cmem)
+tab = lua.create_table()
+assert tab.empty
+assert tab.len() == 0 and len(tab) == 0
+tab.set("key1", 123)
+assert not tab.empty
+assert tab.len() == 0 and len(tab) == 0 # hash part is the only thing we set above
+tab.push(456)
+assert tab.len() == 1 and len(tab) == 1
+assert tab.pop() == 456
+assert tab.raw_pop() is None
+assert tab.get("key1") == 123
+assert tab.get("key2") is None
+tab.remove("key1")
+assert tab.get("key1") is None
+tab.set("key2", 789)
+assert tab.get("key2") == 789
+tab.set("key2", None)
+assert tab.get("key2") is None
+assert tab.empty
+
+assert not tab.readonly
+tab.readonly = True
+assert tab.readonly
+try:
+    tab.set("key3", 456)
+    raise RuntimeError("Should not be able to modify a readonly table")
+except RuntimeError as e:
+    assert "attempt to modify a readonly table" in str(e)
+tab.readonly = False
+assert not tab.readonly
+tab.set("key3", 456)
+assert tab.get("key3") == 456
+
+tab.clear()
+assert tab.empty
+assert tab.len() == 0 and len(tab) == 0
+
+tab.set_safeenv(True)
+tab.set_safeenv(False)
+
+tab = None
+gc.collect()
+
+assert lua.used_memory() / 1000 <= cmem + 10 # Memory use in KB
