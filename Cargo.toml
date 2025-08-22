@@ -12,4 +12,4 @@ crate-type = ["cdylib", "rlib"]
 pyo3 = "0.25.0"
 mluau = { git = "https://github.com/mluau/mluau", features = ["send", "value-ref-refcounted"] }
 bitflags = "2.9"
-pyo3-stub-gen = { git = "https://github.com/Jij-Inc/pyo3-stub-gen" }
+pyo3-stub-gen = "0.12.2"

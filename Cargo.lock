@@ -53,9 +53,9 @@ checksum = "46c5e41b57b8bba42a04676d81cb89e9ee8e859a1a66f80a5a72e1cb76b34d43"
 
 [[package]]
 name = "cc"
-version = "1.2.33"
+version = "1.2.34"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3ee0f8803222ba5a7e2777dd72ca451868909b1ac410621b676adf07280e9b5f"
+checksum = "42bc4aea80032b7bf409b0bc7ccad88853858911b7713a8062fdc0623867bedc"
 dependencies = [
  "jobserver",
  "libc",
@@ -480,8 +480,9 @@ dependencies = [
 
 [[package]]
 name = "pyo3-stub-gen"
-version = "0.13.0"
-source = "git+https://github.com/Jij-Inc/pyo3-stub-gen#c9c44fff7e106762773a6923fa36a8c0763055ca"
+version = "0.12.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "650d9624b551894664cc95867ccfe4fd814a5a225c8fe3a75194a3ae51caae1d"
 dependencies = [
  "anyhow",
  "chrono",
@@ -501,8 +502,9 @@ dependencies = [
 
 [[package]]
 name = "pyo3-stub-gen-derive"
-version = "0.13.0"
-source = "git+https://github.com/Jij-Inc/pyo3-stub-gen#c9c44fff7e106762773a6923fa36a8c0763055ca"
+version = "0.12.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "73947c71903f0e3e31a302a350567594063c75ac155031e40519721429898649"
 dependencies = [
  "heck",
  "proc-macro2",

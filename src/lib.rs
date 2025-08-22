@@ -8,7 +8,7 @@ mod function;
 mod thread;
 mod userdata;
 mod buffer;
-use pyo3_stub_gen::{define_stub_info_gatherer, derive::{gen_stub_pyclass, gen_stub_pyclass_enum, gen_stub_pymethods}};
+use pyo3_stub_gen::{create_exception, define_stub_info_gatherer, derive::{gen_stub_pyclass, gen_stub_pyclass_enum, gen_stub_pymethods}};
 use pyo3::{exceptions::{PyBaseException, PyRuntimeError}, prelude::*, types::{PySequence, PyTuple}};
 use mluau::{FromLua, IntoLua};
 
@@ -483,41 +483,12 @@ impl Lua {
     }
 }
 
-#[gen_stub_pyclass]
-#[pyclass(extends=PyBaseException, frozen)]
-/// A special error type in which only the message is sent as a error to Luau
-/// 
-/// Other error types will include the type name and the message, but this error will only include the message.
-/// 
-/// Raising a ValueError for example will lead to `ValueError: Test error` being the error raised to Luau.
-/// Raising a RawError however will lead to `Test error` being the error raised to Luau.
-struct RawError { 
-    message: String,
-}
-
-#[gen_stub_pymethods]
-#[pymethods]
-impl RawError {
-    #[new]
-    #[pyo3(signature = (message), text_signature = "(message)")]
-    fn new(message: String) -> PyResult<Self> {
-        Ok(RawError { message })
-    }
-
-    // String representation of the error
-    fn __str__(&self) -> String {
-        self.message.clone()
-    }
-
-    fn __repr__(&self) -> String {
-        self.message.clone()
-    }
-}
+create_exception!(pluau._pluau, RawError, PyBaseException, "RawError allows for directly passing through a error message to Luau without any error type information.");
 
 /// Pluau provides Luau bindings for Python using PyO3.
 #[pymodule(name="_pluau")]
 fn pluau(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_class::<RawError>()?;
+    m.add("RawError", m.py().get_type::<RawError>())?;
     m.add_class::<VmState>()?;
     m.add_class::<LuaType>()?;
     m.add_class::<Lua>()?;
