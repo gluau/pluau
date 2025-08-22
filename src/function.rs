@@ -94,6 +94,6 @@ impl Function {
 
     // Define string repr
     fn __repr__(&self) -> String {
-        format!("LuaString({:?})", self.function.to_pointer())
+        format!("LuaFunction({:?})", self.function.to_pointer())
     }
 }
