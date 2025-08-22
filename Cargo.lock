@@ -267,7 +267,7 @@ dependencies = [
 [[package]]
 name = "mlua-sys"
 version = "0.8.3"
-source = "git+https://github.com/mluau/mluau#dfc1c10ff1396fa018298d415b0db0b9d9f0bd90"
+source = "git+https://github.com/mluau/mluau#8a25cbe6dc0bd30d971bf42b4d71349d5456d61e"
 dependencies = [
  "cc",
  "cfg-if",
@@ -278,7 +278,7 @@ dependencies = [
 [[package]]
 name = "mluau"
 version = "0.11.2"
-source = "git+https://github.com/mluau/mluau#dfc1c10ff1396fa018298d415b0db0b9d9f0bd90"
+source = "git+https://github.com/mluau/mluau#8a25cbe6dc0bd30d971bf42b4d71349d5456d61e"
 dependencies = [
  "bstr",
  "either",

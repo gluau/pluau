@@ -398,6 +398,16 @@ class Table:
         """
     def __str__(self) -> builtins.str: ...
     def __repr__(self) -> builtins.str: ...
+    def __iter__(self) -> TableIterOwned: ...
+
+class TableIterOwned:
+    r"""
+    Non thread-safe iterator over table key-value pairs.
+    
+    Attempting to use this iterator from multiple threads will result in a panic.
+    """
+    def __iter__(self) -> TableIterOwned: ...
+    def __next__(self) -> typing.Tuple[None | builtins.bool | LightUserData | builtins.int | builtins.float | Vector | builtins.str | String | Table | Function | Thread | UserData | Buffer, None | builtins.bool | LightUserData | builtins.int | builtins.float | Vector | builtins.str | String | Table | Function | Thread | UserData | Buffer]: ...
 
 class Thread:
     @property

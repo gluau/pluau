@@ -1,5 +1,5 @@
 import pluau
-from pluau.utils import Argument
+from pluau.utils import Argument, Wrapper
 import gc
 
 lua = pluau.Lua()
@@ -156,3 +156,24 @@ print(res, thread.status)
 assert res[0] == 1
 assert res[1] == 2
 assert thread.status == pluau.ThreadState.Finished
+
+print("test for_each")
+tab = lua.create_table()
+tab.push(123)
+tab.set("key1", 456)
+
+for k, v in tab: 
+    print("key", k, v)
+
+
+wrapper = Wrapper(lua, secure_userdata=False)
+class TestObject:
+    def __init__(self):
+        self.foo = 123
+        self.blah = 393
+
+code = lua.load_chunk("local obj = ...; print(obj, obj.foo, obj.blah, obj.bar); assert(obj.foo == 123); assert(obj.blah == 393)")
+code(wrapper.wrap(TestObject()))
+
+code = lua.load_chunk("local obj = ...; print(obj, obj.foo, obj.blah, obj.bar); assert(obj.foo == 123); assert(obj.blah == 393)")
+code(wrapper.wrap({"foo": 123, "blah": 393}))

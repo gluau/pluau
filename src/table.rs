@@ -218,4 +218,38 @@ impl Table {
     fn __repr__(&self) -> String {
         format!("Table({:?})", self.table.to_pointer())
     }
+
+    fn __iter__(&self) -> TableIterOwned {
+        TableIterOwned {
+            iter: self.table.pairs_owned(),
+        }
+    }
+}
+
+/// Non thread-safe iterator over table key-value pairs.
+/// 
+/// Attempting to use this iterator from multiple threads will result in a panic.
+#[gen_stub_pyclass]
+#[pyclass(unsendable)]
+pub struct TableIterOwned {
+    iter: mluau::TablePairsOwned<ValueLike, ValueLike>,
+}
+
+#[gen_stub_pymethods]
+#[pymethods]
+impl TableIterOwned {
+    fn __iter__(slf: PyRef<'_, Self>) -> PyRef<'_, Self> {
+        slf
+    }
+
+    // TODO: Remember to change this if the Luau primitives list changes
+    #[gen_stub(override_return_type(type_repr="typing.Tuple[None | builtins.bool | LightUserData | builtins.int | builtins.float | Vector | String | Table | Function | Thread | UserData | Buffer, None | builtins.bool | LightUserData | builtins.int | builtins.float | Vector | String | Table | Function | Thread | UserData | Buffer]", imports=("typing", "builtins")))]
+    fn __next__(mut slf: PyRefMut<'_, Self>) -> Option<PyResult<(ValueLike, ValueLike)>> {
+        match slf.iter.next() {
+            Some(x) => {
+                Some(x.map_err(|e| PyRuntimeError::new_err(e.to_string())))
+            }
+            None => None,
+        }
+    }
 }

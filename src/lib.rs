@@ -386,7 +386,6 @@ impl Lua {
                 self.vm.load(as_bytes)
             },
             StringLike::StdString(std_string) => {
-                println!("std string: {std_string}");
                 self.vm.load(std_string)
             },
             StringLike::LuaString(lua_string) => {
@@ -559,6 +558,7 @@ fn pluau(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<WeakLua>()?;
     m.add_class::<compiler::Compiler>()?;
     m.add_class::<table::Table>()?;
+    m.add_class::<table::TableIterOwned>()?;
     m.add_class::<vector::Vector>()?;
     m.add_class::<lightuserdata::LightUserData>()?;
     m.add_class::<string::String>()?;
