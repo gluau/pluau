@@ -208,6 +208,22 @@ class Lua:
         
         Any results from the ongoing callback will be ignored and the args passed to yield_with will instead be yielded
         """
+    def weak(self) -> WeakLua:
+        r"""
+        Returns a weak reference to the Lua VM
+        """
+    def strong_count(self) -> builtins.int:
+        r"""
+        Returns the strong count of the Lua VM.
+        
+        Can be useful for debugging
+        """
+    def weak_count(self) -> builtins.int:
+        r"""
+        Returns the weak count of the Lua VM.
+        
+        Can be useful for debugging
+        """
 
 class String:
     r"""
@@ -467,6 +483,36 @@ class Vector:
     def zero() -> Vector: ...
     def __repr__(self) -> builtins.str: ...
     def __str__(self) -> builtins.str: ...
+
+class WeakLua:
+    r"""
+    Provides a weak reference to a Lua VM
+    """
+    def upgrade(self) -> typing.Optional[Lua]:
+        r"""
+        Attempts to upgrade the weak reference to a strong reference.
+        
+        Returns None if the Lua VM has been garbage collected.
+        """
+    def strong_count(self) -> builtins.int:
+        r"""
+        Returns the strong count of the Lua VM.
+        
+        Mostly useful for debugging
+        """
+    def weak_count(self) -> builtins.int:
+        r"""
+        Returns the weak count of the Lua VM.
+        
+        Mostly useful for debugging
+        """
+    def is_destroyed(self) -> builtins.bool:
+        r"""
+        Returns if the Lua instance is destroyed.
+        
+        This is equivalent to checking if the strong count is `0`.
+        """
+    def __eq__(self, other:WeakLua) -> builtins.bool: ...
 
 class LuaType(Enum):
     Boolean = ...

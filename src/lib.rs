@@ -472,6 +472,7 @@ impl Lua {
     /// Tells Lua to the currently running Lua thread once the ongoing callback returns.
     /// 
     /// Any results from the ongoing callback will be ignored and the args passed to yield_with will instead be yielded
+    // TODO: Consider making a CallbackLua instead and putting this there
     #[pyo3(signature = (*args))]
     fn yield_with(&self, args: Vec<ValueLike>) -> PyResult<()> {
         let mut mv = mluau::MultiValue::with_capacity(args.len());
@@ -480,6 +481,69 @@ impl Lua {
         }
         self.vm.yield_with(mv).map_err(|e| PyRuntimeError::new_err(e.to_string()))?;
         Ok(())
+    }
+
+    /// Returns a weak reference to the Lua VM
+    fn weak(&self) -> WeakLua {
+        let weak_lua = self.vm.weak();
+        WeakLua { weak_lua }
+    }
+
+    /// Returns the strong count of the Lua VM.
+    /// 
+    /// Can be useful for debugging
+    fn strong_count(&self) -> usize {
+        self.vm.strong_count()
+    }
+
+    /// Returns the weak count of the Lua VM.
+    /// 
+    /// Can be useful for debugging
+    fn weak_count(&self) -> usize {
+        self.vm.weak_count()
+    }
+}
+
+#[gen_stub_pyclass]
+#[pyclass(frozen)]
+/// Provides a weak reference to a Lua VM
+pub struct WeakLua {
+    weak_lua: mluau::WeakLua,
+}
+
+#[gen_stub_pymethods]
+#[pymethods]
+impl WeakLua {
+    /// Attempts to upgrade the weak reference to a strong reference.
+    /// 
+    /// Returns None if the Lua VM has been garbage collected.
+    fn upgrade(&self) -> Option<Lua> {
+        self.weak_lua.try_upgrade().map(|vm| Lua { vm })
+    }
+
+    /// Returns the strong count of the Lua VM.
+    ///
+    /// Mostly useful for debugging
+    fn strong_count(&self) -> usize {
+        self.weak_lua.strong_count()
+    }
+
+    /// Returns the weak count of the Lua VM.
+    /// 
+    /// Mostly useful for debugging
+    fn weak_count(&self) -> usize {
+        self.weak_lua.weak_count()  
+    }
+
+    /// Returns if the Lua instance is destroyed.
+    ///
+    /// This is equivalent to checking if the strong count is `0`.
+    fn is_destroyed(&self) -> bool {
+        self.weak_lua.is_destroyed()
+    }
+
+    fn __eq__(&self, other: &WeakLua) -> bool {
+        self.weak_lua == other.weak_lua
     }
 }
 
@@ -492,6 +556,7 @@ fn pluau(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<VmState>()?;
     m.add_class::<LuaType>()?;
     m.add_class::<Lua>()?;
+    m.add_class::<WeakLua>()?;
     m.add_class::<compiler::Compiler>()?;
     m.add_class::<table::Table>()?;
     m.add_class::<vector::Vector>()?;
