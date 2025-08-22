@@ -1,3 +1,4 @@
+use mluau::ffi::lua_Integer;
 use pyo3::IntoPyObjectExt;
 use pyo3::{exceptions::PyRuntimeError, prelude::*};
 
@@ -86,7 +87,7 @@ impl<'py> FromPyObject<'py> for ValueLike {
             return Ok(ValueLike::LightUserData(lud.lud.clone()))
         }
 
-        if let Ok(val) = ob.extract::<i64>() {
+        if let Ok(val) = ob.extract::<lua_Integer>() {
             return Ok(ValueLike::Integer(val));
         }
         if let Ok(val) = ob.extract::<f64>() {

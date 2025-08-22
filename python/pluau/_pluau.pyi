@@ -202,25 +202,12 @@ class Lua:
         r"""
         Creates a new Userdata given associated data and a metatable
         """
-    def yield_with(self, values:typing.Sequence[None | builtins.bool | LightUserData | builtins.int | builtins.float | Vector | builtins.str | String | Table | Function | Thread | UserData | Buffer]) -> None:
+    def yield_with(self, *args) -> None:
         r"""
         Tells Lua to the currently running Lua thread once the ongoing callback returns.
         
         Any results from the ongoing callback will be ignored and the args passed to yield_with will instead be yielded
         """
-
-class RawError(builtins.BaseException):
-    r"""
-    A special error type in which only the message is sent as a error to Luau
-    
-    Other error types will include the type name and the message, but this error will only include the message.
-    
-    Raising a ValueError for example will lead to `ValueError: Test error` being the error raised to Luau.
-    Raising a RawError however will lead to `Test error` being the error raised to Luau.
-    """
-    def __new__(cls, message:builtins.str) -> RawError: ...
-    def __str__(self) -> builtins.str: ...
-    def __repr__(self) -> builtins.str: ...
 
 class String:
     r"""
@@ -514,4 +501,6 @@ class ThreadState(Enum):
 class VmState(Enum):
     Continue = ...
     Yield = ...
+
+class RawError(BaseException): ...
 

@@ -1,3 +1,4 @@
+use mluau::ffi::lua_Integer;
 use pyo3::{exceptions::PyRuntimeError, prelude::*};
 use pyo3_stub_gen::derive::{gen_stub_pyclass, gen_stub_pymethods};
 
@@ -88,7 +89,7 @@ impl Table {
     /// Returns the result of the Lua # operator. Might invoke the __len metamethod
     /// 
     /// Use ``raw_len`` to get the length without invoking any metamethods
-    fn len(&self) -> PyResult<i64> {
+    fn len(&self) -> PyResult<lua_Integer> {
         self.table.len().map_err(|e| PyRuntimeError::new_err(e.to_string()))
     }
 
@@ -172,7 +173,7 @@ impl Table {
     /// Inserts element value at position idx to the table (without invoking metamethods), shifting up the elements from table[idx].
     ///
     /// The worst case complexity is O(n), where n is the table length.
-    fn insert(&self, index: i64, value: ValueLike) -> PyResult<()> {
+    fn insert(&self, index: lua_Integer, value: ValueLike) -> PyResult<()> {
         self.table.raw_insert(index, value).map_err(|e| PyRuntimeError::new_err(e.to_string()))
     }
 
