@@ -4,6 +4,10 @@ build-backend = "maturin"
 
 [project]
 name = "pluau"
+description = "Pluau: Python bindings for the Lua(u) programming language"
+readme = "README.md"
+license = "MIT"
+keywords = ["lua", "luau", "scripting", "bindings", "ffi", "lupa"]
 requires-python = ">=3.8"
 classifiers = [
     "Programming Language :: Rust",
@@ -11,6 +15,9 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dynamic = ["version"]
+[project.urls]
+Repository = "https://github.com/gluau/pluau.git"
+Issues = "https://github.com/gluau/pluau/issues"
 [tool.maturin]
 features = ["pyo3/extension-module"]
 python-source = "python"
